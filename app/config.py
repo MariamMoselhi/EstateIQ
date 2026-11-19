@@ -1,24 +1,3 @@
-
-# import os
-# from pathlib import Path
-
-# from dotenv import load_dotenv
-
-# BASE_DIR = Path(__file__).resolve().parent.parent
-# load_dotenv(BASE_DIR / ".env")
-
-# DATA_DIR = BASE_DIR / "data"
-# RAW_DATA_DIR = DATA_DIR / "raw"
-# PROCESSED_DATA_DIR = DATA_DIR / "processed"
-# CHROMA_DB_DIR = DATA_DIR / "chroma_db"
-# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-# OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL")
-# TOP_K = 3
-
-# PORT = int(os.getenv("PORT", "10000"))
-# APP_NAME = "EstateIQ"
-# APP_VERSION = "1.0.0"
-
 import os
 from pathlib import Path
 
@@ -31,8 +10,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 class Settings(BaseSettings):
     openrouter_api_key: str = OPENROUTER_API_KEY
-    openrouter_model: str = "dots-studio/dots-3-note-preview:free"        # your preferred model, tried first
-    # Fallbacks, comma-separated, tried in order if the first model is rate-limited or retired
+    openrouter_model: str = "dots-studio/dots-3-note-preview:free"        
     openrouter_models: str = (
         "dots-studio/dots-3-note-preview:free,"
         "google/gemma-4-26b-a4b-it:free,"
