@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Real Estate AI Assistant</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--card:#f3f4f6;--user:#1f4e79;--line:#e5e7eb}
+@media(prefers-color-scheme:dark){:root{--bg:#111827;--fg:#f3f4f6;--muted:#9ca3af;--card:#1f2937;--user:#2d6aa3;--line:#374151}}
+*{box-sizing:border-box}body{margin:0;font:16px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;height:100dvh}
+header{padding:14px 16px;border-bottom:1px solid var(--line)}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+#log{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-width:820px;width:100%;margin:0 auto}
+.m{padding:10px 14px;border-radius:14px;max-width:88%;white-space:pre-wrap;line-height:1.45}
+.u{align-self:flex-end;background:var(--user);color:#fff}.b{align-self:flex-start;background:var(--card)}
+.src{margin-top:8px;font-size:12px;color:var(--muted);white-space:normal}.src a{color:inherit;display:block;margin-top:2px}
+#ex{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 8px;max-width:820px;width:100%;margin:0 auto}
+#ex button{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);max-width:820px;width:100%;margin:0 auto}
+input{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:16px}
+form button{padding:0 18px;border:0;border-radius:10px;background:var(--user);color:#fff;font-size:16px;cursor:pointer}
+button:disabled{opacity:.5}
+</style></head><body>
+<header><h1>Real Estate AI Assistant</h1><p>Ask about DarGlobal projects and Wasalt listings. Answers come from scraped public pages; check the live sites for current prices.</p></header>
+<div id="log"></div>
+<div id="ex"></div>
+<form id="f"><input id="q" placeholder="Ask a question..." autocomplete="off" maxlength="1000"><button id="s">Send</button></form>
+<script>
+const log=document.getElementById("log"),q=document.getElementById("q"),s=document.getElementById("s");let history=[];
+const examples=["What is Wasalt?","Tell me about Trump Tower Jeddah","Which DarGlobal projects are in Oman?","Show 3-bedroom apartments for sale in Jeddah","Villas for rent in Riyadh"];
+const ex=document.getElementById("ex");
+examples.forEach(t=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.onclick=()=>send(t);ex.appendChild(b)});
+function add(cls,text,sources){const d=document.createElement("div");d.className="m "+cls;d.textContent=text;
+ if(sources&&sources.length){const p=document.createElement("div");p.className="src";p.append("Sources:");
+  sources.slice(0,4).forEach(x=>{const a=document.createElement("a");a.href=x.url;a.target="_blank";a.rel="noopener";a.textContent=(x.source+": "+x.title).slice(0,90);p.appendChild(a)});d.appendChild(p)}
+ log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+async function send(text){if(!text.trim()||s.disabled)return;ex.style.display="none";add("u",text);q.value="";s.disabled=true;const w=add("b","Thinking...");
+ try{const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,history:history.slice(-8)})});
+  const j=await r.json();w.remove();if(!r.ok){add("b",j.detail||"Something went wrong.");}else{add("b",j.answer,j.sources);history.push({role:"user",content:text},{role:"assistant",content:j.answer})}}
+ catch(e){w.remove();add("b","Network error. Please try again.")}s.disabled=false;q.focus()}
+document.getElementById("f").onsubmit=e=>{e.preventDefault();send(q.value)};
+</script></body></html>
